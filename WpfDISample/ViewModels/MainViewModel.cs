@@ -19,8 +19,9 @@ namespace WpfDISample.ViewModels
         private string _greeting;
         private string _selectedName;
         private ObservableCollection<string> _names;
-        private bool _canShowGreeting;
         private bool _canGetNames;
+        private int _selectedIndex = -1;
+        private bool _isProcessing;
 
         public MainViewModel(IGreetingService greetingService, INameListService nameListService)
         {
@@ -28,8 +29,22 @@ namespace WpfDISample.ViewModels
             _nameListService = nameListService;
             ShowGreetingCommand = new RelayCommand(async () => await ShowGreetingAsync(), () => CanShowGreeting);
             GetNamesCommand = new RelayCommand(async () => await GetNamesAsync(), () => CanGetNames);
+            ClearCommand = new RelayCommand(Clear);
             Names = new ObservableCollection<string>();
             CanGetNames = true; // 初期状態でGetNamesボタンを有効にする
+        }
+
+        public bool IsProcessing
+        {
+            get => _isProcessing;
+            set
+            {
+                if (SetProperty(ref _isProcessing, value))
+                {
+                    ((RelayCommand)ShowGreetingCommand).RaiseCanExecuteChanged();
+                    ((RelayCommand)GetNamesCommand).RaiseCanExecuteChanged();
+                }
+            }
         }
 
         public string Greeting
@@ -41,7 +56,13 @@ namespace WpfDISample.ViewModels
         public string SelectedName
         {
             get => _selectedName;
-            set => SetProperty(ref _selectedName, value);
+            set
+            {
+                if (SetProperty(ref _selectedName, value))
+                {
+                    SelectedIndex = Names.IndexOf(value);
+                }
+            }
         }
 
         public ObservableCollection<string> Names
@@ -50,16 +71,13 @@ namespace WpfDISample.ViewModels
             set => SetProperty(ref _names, value);
         }
 
+        public ICommand ShowGreetingCommand { get; }
+        public ICommand GetNamesCommand { get; }
+        public ICommand ClearCommand { get; }
+
         public bool CanShowGreeting
         {
-            get => _canShowGreeting;
-            set
-            {
-                if (SetProperty(ref _canShowGreeting, value))
-                {
-                    ((RelayCommand)ShowGreetingCommand).RaiseCanExecuteChanged();
-                }
-            }
+            get => (IsProcessing == false) && ((SelectedIndex >= 0));
         }
 
         public bool CanGetNames
@@ -74,22 +92,30 @@ namespace WpfDISample.ViewModels
             }
         }
 
-        public ICommand ShowGreetingCommand { get; }
-        public ICommand GetNamesCommand { get; }
+        public int SelectedIndex
+        {
+            get => _selectedIndex;
+            set
+            {
+                if (SetProperty(ref _selectedIndex, value))
+                {
+                    SelectedName = Names.ElementAtOrDefault(value);
+                    ((RelayCommand)ShowGreetingCommand).RaiseCanExecuteChanged();
+                }
+            }
+        }
 
         private async Task ShowGreetingAsync()
         {
-            CanShowGreeting = false;
-
+            IsProcessing = true;
             Greeting = await _greetingService.GreetAsync(SelectedName);
-
-            CanShowGreeting = true;
+            IsProcessing = false;
         }
 
         private async Task GetNamesAsync()
         {
             CanGetNames = false;
-            CanShowGreeting = false;
+            IsProcessing = true;
 
             // サービスから名前リストを非同期で取得
             var names = await _nameListService.GetNamesAsync();
@@ -100,8 +126,17 @@ namespace WpfDISample.ViewModels
             }
 
             // 名前が取得された後、ShowGreetingボタンを有効にする
-            CanShowGreeting = true;
             CanGetNames = true;
+            IsProcessing = false;
+        }
+
+        private void Clear()
+        {
+            IsProcessing = true;
+            SelectedName = string.Empty;
+            Greeting = string.Empty;
+            Names.Clear();
+            IsProcessing = false;
         }
     }
 }

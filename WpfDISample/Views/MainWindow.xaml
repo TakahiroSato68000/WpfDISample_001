@@ -20,13 +20,17 @@
 
         <!-- 1行目: ラベルとコンボボックス -->
         <Label Content="名前：" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="10"/>
-        <ComboBox ItemsSource="{Binding Names}" SelectedItem="{Binding SelectedName}" Grid.Row="0" Grid.Column="1" Margin="10"/>
+        <ComboBox ItemsSource="{Binding Names}" 
+                  SelectedItem="{Binding SelectedName}" 
+                  IsEditable="False"
+                  Grid.Row="0" Grid.Column="1" Margin="10"/>
 
         <!-- 2行目: ボタン -->
-        <Button Content="Get Names" Command="{Binding GetNamesCommand}" IsEnabled="{Binding CanGetNames}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Width="100"/>
+        <Button Content="Get Names" Command="{Binding GetNamesCommand}" Grid.Row="1" Grid.Column="0" Margin="10" Width="100"/>
+        <Button Content="Clear" Command="{Binding ClearCommand}" Grid.Row="1" Grid.Column="1" Margin="10" Width="100"/>
 
         <!-- 3行目: Show Greeting ボタン -->
-        <Button Content="Show Greeting" Command="{Binding ShowGreetingCommand}" IsEnabled="{Binding CanShowGreeting}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Width="100"/>
+        <Button Content="Show Greeting" Command="{Binding ShowGreetingCommand}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="10" Width="100"/>
 
         <!-- 4行目: テキストボックス -->
         <TextBox Text="{Binding Greeting, UpdateSourceTrigger=PropertyChanged}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="10" TextWrapping="Wrap" VerticalAlignment="Top" Width="480"/>

@@ -3,6 +3,7 @@ using System.Configuration;
 using System.Data;
 using System.Windows;
 using WpfDISample.Services;
+using WpfDISample.ViewModels;
 using WpfDISample.Views;
 
 namespace WpfDISample
@@ -27,6 +28,7 @@ namespace WpfDISample
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IGreetingService, GreetingService>();
+            services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
         }
     }

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using WpfDISample.Services;
+using WpfDISample.ViewModels;
 
 namespace WpfDISample.Views
 {
@@ -21,17 +22,10 @@ namespace WpfDISample.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly IGreetingService _GreetingService;
-
-        public MainWindow(IGreetingService GreetingService)
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            _GreetingService = GreetingService;
-        }
-
-        private void OnShowGreetingButtonClick(object sender, RoutedEventArgs e)
-        {
-            OutputTextBox.Text = _GreetingService.Greet(this.Title);
+            DataContext = viewModel;
         }
     }
 }

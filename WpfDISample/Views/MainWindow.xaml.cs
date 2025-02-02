@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using WpfDISample.Services;
 
 namespace WpfDISample.Views
 {
@@ -19,9 +21,18 @@ namespace WpfDISample.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        private readonly IGreetingService _GreetingService;
+
+        public MainWindow(IGreetingService GreetingService)
         {
             InitializeComponent();
+            _GreetingService = GreetingService;
+            DisplayServiceData();
+        }
+
+        private void DisplayServiceData()
+        {
+            MessageBox.Show(_GreetingService.Greet(this.Title));
         }
     }
 }

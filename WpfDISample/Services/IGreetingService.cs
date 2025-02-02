@@ -1,4 +1,7 @@
-   public interface IGreetingService
-   {
-       string Greet(string name);
-   }
+namespace WpfDISample.Services
+{
+    public interface IGreetingService
+    {
+        string Greet(string name);
+    }
+}

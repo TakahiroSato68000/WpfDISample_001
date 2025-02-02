@@ -27,12 +27,11 @@ namespace WpfDISample.Views
         {
             InitializeComponent();
             _GreetingService = GreetingService;
-            DisplayServiceData();
         }
 
-        private void DisplayServiceData()
+        private void OnShowGreetingButtonClick(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(_GreetingService.Greet(this.Title));
+            OutputTextBox.Text = _GreetingService.Greet(this.Title);
         }
     }
 }

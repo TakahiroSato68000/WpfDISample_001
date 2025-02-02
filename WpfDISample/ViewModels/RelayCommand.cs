@@ -18,7 +18,7 @@ namespace WpfDISample.ViewModels
             _canExecute = canExecute;
         }
 
-        public event EventHandler? CanExecuteChanged
+        public event EventHandler CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
@@ -27,5 +27,10 @@ namespace WpfDISample.ViewModels
         public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
 
         public void Execute(object parameter) => _execute();
+
+        public void RaiseCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+        }
     }
 }

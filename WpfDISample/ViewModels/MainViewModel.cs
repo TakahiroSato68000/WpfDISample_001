@@ -15,16 +15,21 @@ namespace WpfDISample.ViewModels
     public class MainViewModel : ObservableObject
     {
         private readonly IGreetingService _greetingService;
+        private readonly INameListService _nameListService;
         private string _greeting;
         private string _selectedName;
         private ObservableCollection<string> _names;
+        private bool _canShowGreeting;
+        private bool _canGetNames;
 
-        public MainViewModel(IGreetingService greetingService)
+        public MainViewModel(IGreetingService greetingService, INameListService nameListService)
         {
             _greetingService = greetingService;
-            ShowGreetingCommand = new RelayCommand(ShowGreeting);
-            GetNamesCommand = new RelayCommand(GetNames);
+            _nameListService = nameListService;
+            ShowGreetingCommand = new RelayCommand(ShowGreeting, () => CanShowGreeting);
+            GetNamesCommand = new RelayCommand(async () => await GetNamesAsync(), () => CanGetNames);
             Names = new ObservableCollection<string>();
+            CanGetNames = true; // 初期状態でGetNamesボタンを有効にする
         }
 
         public string Greeting
@@ -45,6 +50,30 @@ namespace WpfDISample.ViewModels
             set => SetProperty(ref _names, value);
         }
 
+        public bool CanShowGreeting
+        {
+            get => _canShowGreeting;
+            set
+            {
+                if (SetProperty(ref _canShowGreeting, value))
+                {
+                    ((RelayCommand)ShowGreetingCommand).RaiseCanExecuteChanged();
+                }
+            }
+        }
+
+        public bool CanGetNames
+        {
+            get => _canGetNames;
+            set
+            {
+                if (SetProperty(ref _canGetNames, value))
+                {
+                    ((RelayCommand)GetNamesCommand).RaiseCanExecuteChanged();
+                }
+            }
+        }
+
         public ICommand ShowGreetingCommand { get; }
         public ICommand GetNamesCommand { get; }
 
@@ -53,13 +82,22 @@ namespace WpfDISample.ViewModels
             Greeting = _greetingService.Greet(SelectedName);
         }
 
-        private void GetNames()
+        private async Task GetNamesAsync()
         {
-            // サンプルデータを追加
+            CanGetNames = false;
+            CanShowGreeting = false;
+
+            // サービスから名前リストを非同期で取得
+            var names = await _nameListService.GetNamesAsync();
             Names.Clear();
-            Names.Add("Alice");
-            Names.Add("Bob");
-            Names.Add("Charlie");
+            foreach (var name in names)
+            {
+                Names.Add(name);
+            }
+
+            // 名前が取得された後、ShowGreetingボタンを有効にする
+            CanShowGreeting = true;
+            CanGetNames = true;
         }
     }
 }

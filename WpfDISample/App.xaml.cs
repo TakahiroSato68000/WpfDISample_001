@@ -28,6 +28,7 @@ namespace WpfDISample
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IGreetingService, GreetingService>();
+            services.AddSingleton<INameListService, NameListService>();
             services.AddSingleton<MainViewModel>();
             services.AddSingleton<MainWindow>();
         }

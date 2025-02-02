@@ -2,6 +2,6 @@ namespace WpfDISample.Services
 {
     public interface IGreetingService
     {
-        string Greet(string name);
+        Task<string> GreetAsync(string name);
     }
 }

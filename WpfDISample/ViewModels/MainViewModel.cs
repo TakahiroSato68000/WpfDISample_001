@@ -26,7 +26,7 @@ namespace WpfDISample.ViewModels
         {
             _greetingService = greetingService;
             _nameListService = nameListService;
-            ShowGreetingCommand = new RelayCommand(ShowGreeting, () => CanShowGreeting);
+            ShowGreetingCommand = new RelayCommand(async () => await ShowGreetingAsync(), () => CanShowGreeting);
             GetNamesCommand = new RelayCommand(async () => await GetNamesAsync(), () => CanGetNames);
             Names = new ObservableCollection<string>();
             CanGetNames = true; // 初期状態でGetNamesボタンを有効にする
@@ -77,9 +77,13 @@ namespace WpfDISample.ViewModels
         public ICommand ShowGreetingCommand { get; }
         public ICommand GetNamesCommand { get; }
 
-        private void ShowGreeting()
+        private async Task ShowGreetingAsync()
         {
-            Greeting = _greetingService.Greet(SelectedName);
+            CanShowGreeting = false;
+
+            Greeting = await _greetingService.GreetAsync(SelectedName);
+
+            CanShowGreeting = true;
         }
 
         private async Task GetNamesAsync()
